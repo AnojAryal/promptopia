@@ -1,14 +1,8 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { ConnectToDB } from "@utils/database";
 
 import User from "@models/user";
-
-console.log({
-  GOOGLE_ID: process.env.GOOGLE_ID,
-  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-});
-
+import { ConnectToDB } from "@utils/database";
 
 const handler = NextAuth({
   providers: [
@@ -17,44 +11,37 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  callbacks: {
+    async session({ session }) {
+      // store the user id from MongoDB to session
+      const sessionUser = await User.findOne({ email: session.user.email });
+      session.user.id = sessionUser._id.toString();
 
-  
-  async session(session) {
-    const sessionUser = await User.findOne({
-      email: session.user.email,
-    });
+      return session;
+    },
+    async signIn({ account, profile, user, credentials }) {
+      try {
+        await ConnectToDB();
 
-    session.user.id = sessionUser._id.toString();
+        // check if user already exists
+        const userExists = await User.findOne({ email: profile.email });
 
-    return session;
-  },
+        // if not, create a new document and save user in MongoDB
+        if (!userExists) {
+          await User.create({
+            email: profile.email,
+            username: profile.name.replace(" ", "").toLowerCase(),
+            image: profile.picture,
+          });
+        }
 
-
-  async signIn(profile) {
-    try {
-      await ConnectToDB();
-
-      //check if user already exixts
-      const userExixts = await User.findOne({
-        email: profile.email,
-      });
-
-      //if not create a new user
-      if (!userExixts) {
-        await User.create({
-          email: profile.email,
-          usertname: profile.name.replace(" ", "").toLowerCase(),
-          image: profile.picture,
-        });
+        return true;
+      } catch (error) {
+        console.log("Error checking if user exists: ", error.message);
+        return false;
       }
-
-      return true;
-    } catch (error) {
-      console.log(error);
-      return false;
-    }
+    },
   },
 });
-
 
 export { handler as GET, handler as POST };
