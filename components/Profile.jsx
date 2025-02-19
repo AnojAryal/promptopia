@@ -1,37 +1,11 @@
-"use client";
+import PromptCard from "./PromptCard"
 
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-
-import Profile from "@components/Profile";
-
-const handleEdit = () => {};
-const handleDelete = async () => {};
-
-const MyProfile = () => {
-  const { data: session } = useSession();
-  const [posts, setPosts] = useState([]);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch(`/api/users/${sesion?.user.id}/pposts`);
-      const data = await response.json();
-
-      setPosts(data);
-    };
-    if (session?.user.id) fetchPosts();
-  }, []);
-
+const Profile = ({name,desc, data, handleEdit, handleDelete}) => {
   return (
-    <profile
-      name="My"
-      desc="welcome to your personalized profile page"
-      data={posts}
-      handleEdit={handleEdit}
-      handleDelete={handleDelete}
-    />
-  );
-};
+    <section className="w-full">
+      <h1>{name} Profile</h1>
+    </section>
+  )
+}
 
-export default MyProfile;
+export default Profile
