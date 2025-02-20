@@ -24,7 +24,7 @@ const MyProfile = () => {
   }, []);
 
   return (
-    <profile
+    <Profile
       name="My"
       desc="welcome to your personalized profile page"
       data={posts}
