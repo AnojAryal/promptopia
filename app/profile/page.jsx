@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 
 import Profile from "@components/Profile";
 
-const handleEdit = () => {};
-const handleDelete = async () => {};
+
 
 const MyProfile = () => {
+  Router.push = useRouter();
   const { data: session } = useSession();
   const [posts, setPosts] = useState([]);
 
@@ -22,6 +22,11 @@ const MyProfile = () => {
     };
     if (session?.user.id) fetchPosts();
   }, []);
+
+  const handleEdit = (post) => {
+    Router.push(`/update-prompt?id=${post._id}`);
+  };
+  const handleDelete = async (post) => {};
 
   return (
     <Profile
