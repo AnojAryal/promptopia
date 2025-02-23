@@ -7,10 +7,16 @@ import Form from "@components/Form";
 const UpdatePrompt = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const promptId = searchParams.get("id");
-
+  const [promptId, setPromptId] = useState(null);
   const [post, setPost] = useState({ prompt: "", tag: "" });
   const [submitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const promptIdFromUrl = searchParams.get("id");
+    if (promptIdFromUrl) {
+      setPromptId(promptIdFromUrl);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!promptId) return;
@@ -58,7 +64,7 @@ const UpdatePrompt = () => {
   };
 
   if (!promptId) {
-    return <p>Prompt ID is required to edit the prompt.</p>;
+    return <p>Loading...</p>;
   }
 
   return (
