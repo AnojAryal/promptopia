@@ -2,35 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
 import Form from "@components/Form";
 
 const UpdatePrompt = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [promptId, setPromptId] = useState(null);
-  const [post, setPost] = useState({ prompt: "", tag: "" });
+  const promptId = searchParams.get("id");
+
+  const [post, setPost] = useState({ prompt: "", tag: "", });
   const [submitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    const promptIdFromUrl = searchParams.get("id");
-    if (promptIdFromUrl) {
-      setPromptId(promptIdFromUrl);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    if (!promptId) return;
-
     const getPromptDetails = async () => {
       const response = await fetch(`/api/prompt/${promptId}`);
       const data = await response.json();
+
       setPost({
         prompt: data.prompt,
         tag: data.tag,
       });
     };
 
-    getPromptDetails();
+    if (promptId) getPromptDetails();
   }, [promptId]);
 
   const updatePrompt = async (e) => {
@@ -46,15 +40,10 @@ const UpdatePrompt = () => {
           prompt: post.prompt,
           tag: post.tag,
         }),
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
 
       if (response.ok) {
         router.push("/");
-      } else {
-        console.log("Error updating prompt.");
       }
     } catch (error) {
       console.log(error);
@@ -63,13 +52,9 @@ const UpdatePrompt = () => {
     }
   };
 
-  if (!promptId) {
-    return <p>Loading...</p>;
-  }
-
   return (
     <Form
-      type="Edit"
+      type='Edit'
       post={post}
       setPost={setPost}
       submitting={submitting}
