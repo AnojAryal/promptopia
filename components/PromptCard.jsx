@@ -17,10 +17,22 @@ const PromptCard = ({ post, handleTagClick, handleEdit, handleDelete }) => {
     setTimeout(() => setCopied(""), 3000);
   };
 
+  const handleProfileClick = () => {
+    router.push(
+      `/profile/${post.creator._id}?name=${encodeURIComponent(
+        post.creator.username
+      )}`
+    );
+  };
+
   return (
     <div className="prompt_card border border-gray-200 p-4 rounded-lg shadow-md">
       <div className="flex justify-between items-start gap-5">
-        <div className="flex-1 flex items-center gap-3 cursor-pointer">
+        {/* Clickable User Profile Section */}
+        <div
+          className="flex-1 flex items-center gap-3 cursor-pointer"
+          onClick={handleProfileClick}
+        >
           {post.creator.image && (
             <Image
               src={post.creator.image}
